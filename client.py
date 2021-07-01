@@ -16,11 +16,11 @@ class Client:
         except TypeError:
             self.download_dir = download_dir
 
-    def get(self, url, filename):
-        resp = self._get_file(url)
+    def save(self, url, filename):
+        resp = self._get(url)
         self._save(filename, resp)
     
-    def _get_file(self, url):
+    def _get(self, url):
         response = requests.get(url, stream=True)
         response.raise_for_status()
         return response
