@@ -22,11 +22,3 @@ class ProgressBar:
     def _bar(self, progress):
         filled_len = int(self.bar_len * progress // self.total_size)
         return self.fill * filled_len + '-' * (self.bar_len - filled_len)
-    
-if __name__ == '__main__':
-    progbar = ProgressBar(500)
-    for i in range(0, 501):
-        if i % 10 == 0:
-            time.sleep(0.1)
-            # print(f'{i} / 500 = {i/500}')
-            progbar.update(i)
