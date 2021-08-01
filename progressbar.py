@@ -1,5 +1,6 @@
-import time
-
+"""
+A simple progress bar for console programs.
+"""
 class ProgressBar:
     def __init__(self, total_size, decimal_places = 1, fill = '█', bar_len = 100):
         self.total_size = total_size

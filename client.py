@@ -1,5 +1,5 @@
-import pathlib
 import progressbar
+import os
 import requests
 
 """
@@ -11,10 +11,7 @@ A simple HTTP download client.
 """
 class Client:
     def __init__(self, download_dir=None):
-        try:
-            self.download_dir = pathlib.PurePath(download_dir)
-        except TypeError:
-            self.download_dir = download_dir
+        self.download_dir = download_dir
 
     def save(self, url, filename):
         resp = self._get(url)
@@ -27,7 +24,9 @@ class Client:
 
     def _save(self, fname, r):
         if self.download_dir:
-            fname = self.download_dir.joinpath(fname)
+            if not os.path.exists(self.download_dir):
+                os.makedirs(self.download_dir)
+            fname = os.path.join(self.download_dir, fname)
         
         pbar = self._init_pbar(r)
         with open(fname, 'wb') as f:
