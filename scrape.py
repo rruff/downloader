@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 from client import Client
-from urllib.parse import urlparse
-from urllib.parse import urlsplit
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse, urlsplit
 import pathlib
 import requests
 import bs4
@@ -22,7 +20,7 @@ class Scraper:
         hrefs = filter(self.is_absolute, self.find_in_page(self.resp, self.selector, self.attr))
         count = 0
         for href in hrefs:
-            dl_url = self.dl_url(href, host=self.host, path_prefix=self.path_prefix, path_start_index=self.path_index)
+            dl_url = self.dl_url(href)
             filename = urlsplit(href).path.split('/')[-1]
             print(f'Downloading {dl_url}')
             client.save(dl_url, filename)
@@ -40,18 +38,18 @@ class Scraper:
         else:
             return elems
 
-    def dl_url(self, url, host=None, path_prefix=None, path_start_index=0):
+    def dl_url(self, url):
         """ Computes the download URL. """
         u = urlparse(url)
 
-        if host:
-            base = f'{u.scheme}://{host}'
+        if self.host:
+            base = f'{u.scheme}://{self.host}'
         else:
             base = f'{u.scheme}://{u.netloc}'
 
-        if path_prefix:
-            p = pathlib.PurePath(path_prefix).joinpath(u.path[path_start_index+1:])
+        if self.path_prefix:
+            p = pathlib.PurePath(self.path_prefix).joinpath(u.path[self.path_start_index+1:])
         else:
-            p = pathlib.PurePath(u.path[path_start_index:])
+            p = pathlib.PurePath(u.path[self.path_start_index:])
         
         return urljoin(base, p.as_posix())
