@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 
-from client import Client
-from urllib.parse import urljoin, urlparse, urlsplit
 import pathlib
-import requests
-import bs4
+from urllib.parse import urljoin, urlparse, urlsplit
 
+import bs4
+import requests
+
+from client import Client
+
+
+""" 
+Scrapes a web page for data based on provided CSS selectors and HTML attributes.
+"""
 class Scraper:
     def __init__(self, client, resp, **kwargs):
         self.client = client
