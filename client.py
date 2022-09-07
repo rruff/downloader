@@ -1,3 +1,4 @@
+from requests.models import HTTPError
 import progressbar
 import os
 import requests
@@ -14,8 +15,14 @@ class Client:
         self.download_dir = download_dir
 
     def save(self, url, filename):
-        resp = self._get(url)
-        self._save(filename, resp)
+        try:
+            resp = self._get(url)
+            self._save(filename, resp)
+            return True
+        except HTTPError as e:
+            print(f'Error downloading {url}: {e}')
+            return False
+
     
     def _get(self, url):
         response = requests.get(url, stream=True)

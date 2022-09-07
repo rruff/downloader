@@ -7,6 +7,7 @@ import bs4
 import requests
 
 from client import Client
+from conf.config import configs
 
 
 """ 
@@ -24,13 +25,15 @@ class Scraper:
 
     def scrape(self):
         hrefs = filter(self.is_absolute, self.find_in_page(self.resp, self.selector, self.attr))
+        # print(f'hrefs={hrefs.__sizeof__()}')
         count = 0
         for href in hrefs:
             dl_url = self.dl_url(href)
+            # print(f'dl_url={dl_url}')
             filename = urlsplit(href).path.split('/')[-1]
             print(f'Downloading {dl_url}')
-            client.save(dl_url, filename)
-            count += 1
+            saved = self.client.save(dl_url, filename)
+            if saved: count += 1
         print(f'Downloaded {count} files')
     
     def is_absolute(self, url):
@@ -38,7 +41,9 @@ class Scraper:
 
     def find_in_page(self, res, selector, attr=None):
         html = bs4.BeautifulSoup(res.text, 'html.parser')
+        # print(f'{html}')
         elems = html.select(selector)
+        # print(f'elems={elems}')
         if attr:
             return [e.get(attr) for e in elems]
         else:
@@ -47,15 +52,21 @@ class Scraper:
     def dl_url(self, url):
         """ Computes the download URL. """
         u = urlparse(url)
-
         if self.host:
             base = f'{u.scheme}://{self.host}'
         else:
             base = f'{u.scheme}://{u.netloc}'
 
         if self.path_prefix:
-            p = pathlib.PurePath(self.path_prefix).joinpath(u.path[self.path_start_index+1:])
+            p = pathlib.PurePath(self.path_prefix).joinpath(u.path[self.path_index+1:])
         else:
-            p = pathlib.PurePath(u.path[self.path_start_index:])
+            p = pathlib.PurePath(u.path[self.path_index:])
         
         return urljoin(base, p.as_posix())
+
+if __name__ == '__main__':
+    my_user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36'
+    page = requests.get('https://vipergirls.to/threads/7326980-2022-09-03-Cabbi-What-A-View-5251162-x48', headers={'user-agent': my_user_agent})
+    client = Client('/Volumes/storage/Pictures/SG/Cabbi/What-A-View')
+    scraper = Scraper(client, page, **configs['imx'])
+    scraper.scrape()
