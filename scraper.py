@@ -63,10 +63,3 @@ class Scraper:
             p = pathlib.PurePath(u.path[self.path_index:])
         
         return urljoin(base, p.as_posix())
-
-if __name__ == '__main__':
-    my_user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36'
-    page = requests.get('https://vipergirls.to/threads/7326980-2022-09-03-Cabbi-What-A-View-5251162-x48', headers={'user-agent': my_user_agent})
-    client = Client('/Volumes/storage/Pictures/SG/Cabbi/What-A-View')
-    scraper = Scraper(client, page, **configs['imx'])
-    scraper.scrape()
