@@ -1,4 +1,6 @@
+import logging
 from requests.models import HTTPError
+from requests.exceptions import ConnectionError
 import progressbar
 import os
 import requests
@@ -20,7 +22,10 @@ class Client:
             self._save(filename, resp)
             return True
         except HTTPError as e:
-            print(f'Error downloading {url}: {e}')
+            logging.error(f'Error downloading {url}: {e}')
+            return False
+        except ConnectionError as e:
+            logging.error('A connection error occurred for URL %s: %s', url, e)
             return False
 
     
